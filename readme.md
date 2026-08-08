@@ -11,8 +11,8 @@ ToDo:
 
 - [ ] Ein Thema für die Top 100 Liste
   - [ ] Liebelieder/Hochzeitslieder
-  - [ ] Partylieder
-  - [ ]
+  - [ ] Die besten Partylieder
+  - [ ] Weiter Vorschläge
 
 - [ ] Umfrage unter den Gästen
   - [ ] Mailverteiler erstellen
@@ -34,7 +34,7 @@ ToDo:
   - [ ] Mit Susannes Bruder abstimnmen
   - [ ] Show überlegen
   
-## Umfragetechnik
+## Umfrage Technik
 
 - Google Forms geht nicht weil man keine Liste der zur Vorauswahl definieren kann.
 - <https://www.fillout.com/> könnte funktionieren
