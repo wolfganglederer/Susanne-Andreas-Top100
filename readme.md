@@ -9,21 +9,21 @@ Aus dieser Liste könnte man dann auch noch ein personlisiertes Hitster Spiel er
 
 ToDo:
 
--[ ] Ein Thema für die Top 100 Liste
-  -[ ] Liebelieder/Hochzeitslieder
-  -[ ] Partylieder
-  -[ ]
+- [ ] Ein Thema für die Top 100 Liste
+  - [ ] Liebelieder/Hochzeitslieder
+  - [ ] Partylieder
+  - [ ]
 
--[ ] Umfrage unter den Gästen
-  -[ ] EMailverteiler erstellen
-  -[ ] Erinnerung an die Gäste
+- [ ] Umfrage unter den Gästen
+  - [ ] EMailverteiler erstellen
+  - [ ] Erinnerung an die Gäste
 
--[ ] Umfrage
-  -[ ] Umfrage erstellen
-  -[ ] Datenbank Erstellen zum speichern der Ergebnisse
-  -[ ] Liste der möglichen Songs erstellen (mit Spotify URI)
-  -[ ]
-  -[ ]
-  -[ ]
+- [ ] Umfrage
+  - [ ] Umfrage erstellen
+  - [ ] Datenbank Erstellen zum speichern der Ergebnisse
+  - [ ] Liste der möglichen Songs erstellen (mit Spotify URI)
+  - [ ]
+  - [ ]
+  - [ ]
 
 
