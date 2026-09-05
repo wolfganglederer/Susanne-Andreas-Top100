@@ -1,0 +1,13 @@
+name: susanne-andreas-top100
+title: Susanne-Andreas-Top100
+username: wl2000
+account: wl2000
+server: connect.posit.cloud
+hostUrl: https://api.connect.posit.cloud/v1
+appId: 01a0534e-6c2c-3b73-c7db-c80555b40572
+bundleId:
+url: https://connect.posit.cloud/wl2000/content/01a0534e-6c2c-3b73-c7db-c80555b40572
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .Rprofile|kommunikation/SignalGruppeStart.md|prompt.md|R/spotifyR-test.R|R/supabase_test.R|readme.md|renv.lock

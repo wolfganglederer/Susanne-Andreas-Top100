@@ -1,0 +1,11 @@
+name: Susanne-Andreas-Top100
+title:
+username: wl2000
+account: wl2000
+server: connect.posit.cloud
+envVars: APP_PASSWORD, SUPABASE_HOST, SUPABASE_PORT, SUPABASE_DBNAME, SUPABASE_USER, SUPABASE_PASSWORD, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
+hostUrl: https://api.connect.posit.cloud/v1
+appId: 01a0535f-26fd-1260-efcf-4e10d6083511
+bundleId:
+url: https://connect.posit.cloud/wl2000/content/01a0535f-26fd-1260-efcf-4e10d6083511
+version: 1
