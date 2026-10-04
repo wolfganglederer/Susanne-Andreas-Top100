@@ -14,45 +14,45 @@
 #let card-color-front = rgb("1a1a1a") // Dunkelgrau/Schwarz
 
 // Hitster-Farbpalette für die Neon-Ringe
-#let c-cyan    = rgb("00a8e8")
-#let c-red     = rgb("e33b3b")
+#let c-cyan    = rgb("#0182b5")
+#let c-red     = rgb("#cf244c")
 #let c-yellow  = rgb("fadd00")
-#let c-purple  = rgb("9d4edd")
+#let c-purple  = rgb("#562d4e")
 
 // Vorderseite: QR-Code mit versetzten, unterbrochenen Kreisbögen
 // Vorderseite (QR-Code mit gestrichelten / unterbrochenen Neon-Ringen)
+// Hilfsfunktion: Zeichnet einen Kreis mit genau einer Lücke
+#let broken-ring(r, gap-deg, stroke-color, rot) = {
+  // Umfang berechnen: 2 * pi * r
+  let circum = 2 * calc.pi * r
+  let gap-len = (gap-deg / 360deg) * circum
+  let dash-len = circum - gap-len
+
+  place(center + horizon, rotate(rot, circle(
+    radius: r,
+    stroke: (
+      paint: stroke-color,
+      thickness: 1.6pt,
+      dash: (dash-len, gap-len)
+    )
+  )))
+}
+
+// Vorderseite (QR-Code mit Neon-Ringen, jeweils genau 1 Lücke)
+// Vorderseite (QR-Code mit 8 Neon-Ringen, jeweils genau 1 Lücke)
 #let front-side(url) = {
   box(width: card-size + bleed, height: card-size + bleed * 2, fill: card-color-front, clip: true)[
     #align(center + horizon)[
-      // Äußerer Ring (Cyan) – 2 große Abschnitte
-      #place(center + horizon, circle(
-        radius: 29mm,
-        stroke: (paint: rgb("00a8e8"), thickness: 1.5pt, dash: (80pt, 25pt, 50pt, 25pt))
-      ))
       
-      // 2. Ring (Rot) – versetzt unterbrochen
-      #place(center + horizon, rotate(40deg, circle(
-        radius: 26mm,
-        stroke: (paint: rgb("e33b3b"), thickness: 1.5pt, dash: (110pt, 30pt, 30pt, 20pt))
-      )))
-      
-      // 3. Ring (Gelb)
-      #place(center + horizon, rotate(-35deg, circle(
-        radius: 23mm,
-        stroke: (paint: rgb("fadd00"), thickness: 1.5pt, dash: (65pt, 20pt, 75pt, 25pt))
-      )))
-      
-      // 4. Ring (Lila)
-      #place(center + horizon, rotate(85deg, circle(
-        radius: 20mm,
-        stroke: (paint: rgb("9d4edd"), thickness: 1.5pt, dash: (80pt, 25pt, 40pt, 20pt))
-      )))
-      
-      // Innerer Ring (Cyan / Akzent)
-      #place(center + horizon, rotate(15deg, circle(
-        radius: 17mm,
-        stroke: (paint: rgb("00a8e8"), thickness: 1.5pt, dash: (50pt, 20pt, 40pt, 15pt))
-      )))
+      // 8 Ringe von außen nach innen, jeweils um ~2 mm versetzt:
+      #broken-ring(29.0mm, 50deg, c-red,    75deg)
+      #broken-ring(27.0mm, 50deg, c-cyan,   265deg)
+      #broken-ring(25.0mm, 42deg, c-yellow,   20deg)
+      #broken-ring(23.0mm, 36deg, c-red,  285deg)
+      #broken-ring(21.0mm, 40deg, c-purple,    140deg)
+      #broken-ring(19.0mm, 34deg, c-red,      30deg)
+      #broken-ring(17.0mm, 44deg, c-cyan,  220deg)
+      #broken-ring(15.0mm, 38deg, c-yellow,  110deg)
 
       // QR-Code auf weißem Träger
       #rect(fill: white, inset: 2mm, radius: 1mm)[
@@ -131,7 +131,7 @@
 #let raw-data = csv("S&A Top100_manual_sort_short.csv")
 #let headers = raw-data.at(0).map(h => h.trim())
 // #let data-rows = raw-data.slice(1)
-#let data-rows = raw-data.slice(1, 5)
+#let data-rows = raw-data.slice(1, 4)
 
 #let get(row, col-name, fallback: "") = {
   let idx = headers.position(h => h == col-name)
