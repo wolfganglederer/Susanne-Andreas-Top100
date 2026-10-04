@@ -59,7 +59,7 @@
       #broken-ring(17.0mm, 55deg, c-cyan,    120deg)
       #broken-ring(15.0mm, 90deg, c-yellow,    0deg)
 
-      #rect(fill: white, inset: 2mm, radius: 1mm)[
+      #rect(fill: white, inset: 0mm, radius: 0mm)[
         #qr-code(url, width: 22mm)
       ]
     ]
@@ -144,7 +144,7 @@
 // --- CSV EINLESEN ---
 #let raw-data = csv("S&A Top100_manual_sort_short.csv")
 #let headers = raw-data.at(0).map(h => h.trim())
-#let data-rows = raw-data.slice(1, 4)
+#let data-rows = raw-data.slice(1, 3)
 
 #let get(row, col-name, fallback: "") = {
   let idx = headers.position(h => h == col-name)
