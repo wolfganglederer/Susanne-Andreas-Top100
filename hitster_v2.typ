@@ -25,14 +25,20 @@
 #let c-purple  = rgb("#562d4e")
 
 #let back-colors = (
+  gradient.linear(rgb("#e33b3b"), rgb("#a64b22"), angle: 90deg), // 1. Rot zu Dunkelrot
+  rgb("#46c6e0"), 
+  rgb("4ecdc4"), 
+  gradient.linear(rgb("#dab6ee"), rgb("#9ceaf0"), angle: 90deg),
+  gradient.linear(rgb("#ea87f5"), rgb("#64b5f6"), angle: 90deg),
+  gradient.linear(rgb("#c79901"), rgb("#efcf67"), angle: 90deg),
+  gradient.linear(rgb("#af83e9"), rgb("#7a52ae")), 
+  rgb("b388eb"), 
+  rgb("64b5f6"), 
+  rgb("#c79901"), 
   rgb("e33b3b"), // 1. Hitster-Klassik-Rot
   rgb("ff7a33"), // 2. Kräftiges Orange
-  rgb("#c79901"), // 3. Sonnengelb
-  rgb("4ecdc4"), // 4. Helles Türkis / Mint
   rgb("7bc043"), // 5. Frisches Maigrün
-  rgb("b388eb"), // 6. Pastell-Lila / Flieder
   rgb("ff85a1"), // 7. Kräftiges Rosa / Koralle
-  rgb("64b5f6"), // 8. Himmelblau
 )
 
 // --- VORDERSEITE ---
@@ -58,10 +64,13 @@
       #broken-ring(19.0mm, 40deg, c-orange,  200deg)
       #broken-ring(17.0mm, 55deg, c-cyan,    120deg)
       #broken-ring(15.0mm, 90deg, c-yellow,    0deg)
-
+#rect(fill: black, width: 26mm, height: 26mm, inset: 0mm)[
+  #align(horizon+center)[
       #rect(fill: white, inset: 0mm, radius: 0mm)[
-        #qr-code(url, width: 22mm)
+        #qr-code(url, width: 24.95mm)
       ]
+  ]
+    ]
     ]
   ]
 }
@@ -144,7 +153,7 @@
 // --- CSV EINLESEN ---
 #let raw-data = csv("S&A Top100_manual_sort_short.csv")
 #let headers = raw-data.at(0).map(h => h.trim())
-#let data-rows = raw-data.slice(1, 3)
+#let data-rows = raw-data.slice(1, 2)
 
 #let get(row, col-name, fallback: "") = {
   let idx = headers.position(h => h == col-name)
