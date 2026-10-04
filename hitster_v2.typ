@@ -14,7 +14,6 @@
 #let mark-off = 3mm    // 3mm Offset > 2mm Bleed -> ragt nicht in die Farbe!
 
 // --- FARBEN ---
-#let card-color-back = rgb("e33b3b")
 #let card-color-front = rgb("1a1a1a")
 
 // Hitster-Farbpalette für die Neon-Ringe
@@ -25,20 +24,20 @@
 #let c-purple  = rgb("#562d4e")
 
 #let back-colors = (
-  gradient.linear(rgb("#e33b3b"), rgb("#a64b22"), angle: 90deg), // 1. Rot zu Dunkelrot
+  gradient.linear(rgb("#e33b3b"), rgb("#a64b22"), angle: 90deg), 
   rgb("#46c6e0"), 
-  rgb("4ecdc4"), 
   gradient.linear(rgb("#dab6ee"), rgb("#9ceaf0"), angle: 90deg),
-  gradient.linear(rgb("#ea87f5"), rgb("#64b5f6"), angle: 90deg),
+  rgb("4ecdc4"), 
   gradient.linear(rgb("#c79901"), rgb("#efcf67"), angle: 90deg),
-  gradient.linear(rgb("#af83e9"), rgb("#7a52ae")), 
   rgb("b388eb"), 
   rgb("64b5f6"), 
   rgb("#c79901"), 
-  rgb("e33b3b"), // 1. Hitster-Klassik-Rot
-  rgb("ff7a33"), // 2. Kräftiges Orange
-  rgb("7bc043"), // 5. Frisches Maigrün
-  rgb("ff85a1"), // 7. Kräftiges Rosa / Koralle
+  rgb("e33b3b"), 
+  gradient.linear(rgb("#ea87f5"), rgb("#64b5f6"), angle: 90deg),
+  rgb("ff7a33"), 
+  rgb("#4eedcb"), 
+  gradient.linear(rgb("#af83e9"), rgb("#7a52ae")), 
+  rgb("ff85a1")
 )
 
 // --- VORDERSEITE ---
@@ -54,7 +53,7 @@
 }
 
 #let front-side(url) = {
-  box(width: card-size + bleed * 2, height: card-size + bleed * 2, fill: card-color-front, clip: true)[
+  box(width: card-size + bleed*2, height: card-size + bleed * 2, fill: card-color-front, clip: true)[
     #align(center + horizon)[
       #broken-ring(29.0mm, 50deg, c-red,      75deg)
       #broken-ring(27.0mm, 50deg, c-cyan,    265deg)
@@ -76,7 +75,7 @@
 }
 
 // --- RÜCKSEITE ---
-#let back-side(artist, title, year, top100, danceability, bg-color) = {
+#let back-side(artist, title, year, total_points, bg-color) = {
   box(width: card-size + bleed * 2, height: card-size + bleed * 2, fill: bg-color, clip: true)[
     #set text(font: "Liberation Sans", fill: black)
 
@@ -93,12 +92,7 @@
         ]
 
         #place(bottom + left, dx: 4mm, dy: -4mm)[
-          #text(size: 6pt, weight: "bold", fill: rgb("#ffffff"))[#top100]
-        ]
-        #if danceability != "NA" and danceability != "" [
-          #place(bottom + right, dx: -4mm, dy: -4mm)[
-            #text(size: 6pt, fill: rgb("333333"))[#danceability]
-          ]
+          #text(size: 6pt, weight: "bold", fill: rgb("#ffffff"))[#total_points]
         ]
       ]
     ]
@@ -122,7 +116,7 @@
 }
 
 // --- KARTE ZUSAMMENBAUEN ---
-#let make-card(artist, title, year, url, top100, danceability, bg-color) = {
+#let make-card(artist, title, year, url, total_points, bg-color) = {
   let front-x = mark-len + mark-off + bleed
   let front-y = mark-len + mark-off + bleed
   let back-x  = front-x + card-size + gap
@@ -136,7 +130,7 @@
       #front-side(url)
     ]
     #place(top + left, dx: back-x - bleed, dy: back-y - bleed)[
-      #back-side(artist, title, year, top100, danceability, bg-color)
+      #back-side(artist, title, year, total_points, bg-color)
     ]
 
     #crop-marks(front-x, front-y, card-size, card-size)
@@ -151,9 +145,9 @@
 }
 
 // --- CSV EINLESEN ---
-#let raw-data = csv("S&A Top100_manual_sort_short.csv")
+#let raw-data = csv("top300_hitster.csv")
 #let headers = raw-data.at(0).map(h => h.trim())
-#let data-rows = raw-data.slice(1, 2)
+#let data-rows = raw-data.slice(1, 3)
 
 #let get(row, col-name, fallback: "") = {
   let idx = headers.position(h => h == col-name)
@@ -174,10 +168,11 @@
     let title = get(row, "title", fallback: "Unbekannt")
     let year = get(row, "release_year", fallback: "—")
     let url = get(row, "spotify_url", fallback: "https://spotify.com")
-    let top100 = get(row, "Top 100 Konsolidiert", fallback: "")
-    let danceability = get(row, "Danceability", fallback: "")
-
+    let total_points = get(row, "total_points", fallback: "xxx")
     let bg-color = back-colors.at(calc.rem(idx, back-colors.len()))
-    make-card(artist, title, year, url, top100, danceability, bg-color)
+    // let top100 = get(row, "Top 100 Konsolidiert", fallback: "")
+    // let danceability = get(row, "Danceability", fallback: "")
+
+    make-card(artist, title, year, url, total_points, bg-color)
   })
 )
