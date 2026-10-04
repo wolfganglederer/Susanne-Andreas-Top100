@@ -16,6 +16,7 @@
 // Hitster-Farbpalette für die Neon-Ringe
 #let c-cyan    = rgb("#0182b5")
 #let c-red     = rgb("#cf244c")
+#let c-orange  = rgb("#cd4a11")
 #let c-yellow  = rgb("fadd00")
 #let c-purple  = rgb("#562d4e")
 
@@ -48,11 +49,11 @@
       #broken-ring(29.0mm, 50deg, c-red,    75deg)
       #broken-ring(27.0mm, 50deg, c-cyan,   265deg)
       #broken-ring(25.0mm, 42deg, c-yellow,   20deg)
-      #broken-ring(23.0mm, 36deg, c-red,  285deg)
-      #broken-ring(21.0mm, 40deg, c-purple,    140deg)
-      #broken-ring(19.0mm, 34deg, c-red,      30deg)
-      #broken-ring(17.0mm, 44deg, c-cyan,  220deg)
-      #broken-ring(15.0mm, 38deg, c-yellow,  110deg)
+      #broken-ring(23.0mm, 55deg, c-red,  200deg)
+      #broken-ring(21.0mm, 30deg, c-purple,    15deg)
+      #broken-ring(19.0mm, 40deg, c-orange,      200deg)
+      #broken-ring(17.0mm, 55deg, c-cyan,  120deg)
+      #broken-ring(15.0mm, 90deg, c-yellow,  0deg)
 
       // QR-Code auf weißem Träger
       #rect(fill: white, inset: 2mm, radius: 1mm)[
@@ -61,29 +62,43 @@
     ]
   ]
 }
+// Farbpalette für die Rückseiten (sattes Rot wie beim Original plus kontraststarke helle/mittlere Töne)
+#let back-colors = (
+  rgb("e33b3b"), // 1. Hitster-Klassik-Rot
+  rgb("ff7a33"), // 2. Kräftiges Orange
+  rgb("#c79901"), // 3. Sonnengelb
+  rgb("4ecdc4"), // 4. Helles Türkis / Mint
+  rgb("7bc043"), // 5. Frisches Maigrün
+  rgb("b388eb"), // 6. Pastell-Lila / Flieder
+  rgb("ff85a1"), // 7. Kräftiges Rosa / Koralle
+  rgb("64b5f6"), // 8. Himmelblau
+)
 
-// Rückseite (Interpret oben, Jahr groß in der Mitte, Titel unten)
-#let back-side(artist, title, year, top100, danceability) = {
-  box(width: card-size + bleed, height: card-size + bleed * 2, fill: card-color-back, clip: true)[
+// Rückseite mit dynamischer Hintergrundfarbe
+#let back-side(artist, title, year, top100, danceability, bg-color) = {
+  box(width: card-size + bleed, height: card-size + bleed * 2, fill: bg-color, clip: true)[
     #set text(font: "Liberation Sans", fill: black)
 
     #align(center + horizon)[
-      #v(6mm)
-      #text(size: 13pt, weight: "medium")[#artist]
+      #v(8mm)
+      // Artist oben
+      #text(size: 14pt, weight: "bold")[#artist]
 
       #v(1fr)
 
-      #text(size: 40pt, weight: "bold", tracking: -1pt)[#year]
+      // Release Year (groß in der Mitte)
+      #text(size: 65pt, weight: "bold", tracking: -1pt)[#year]
 
       #v(1fr)
 
-      #text(size: 11pt, style: "italic")[#title]
-      #v(6mm)
+      // Songtitel unten kursiv
+      #text(size: 14pt, style: "italic")[#title]
+      #v(8mm)
     ]
 
     // Details in den Ecken
     #place(bottom + left, dx: 4mm, dy: -4mm)[
-      #text(size: 6pt, weight: "bold", fill: rgb("222222"))[#top100]
+      #text(size: 6pt, weight: "bold", fill: rgb("#ffffff"))[#top100]
     ]
     #if danceability != "NA" and danceability != "" [
       #place(bottom + right, dx: -4mm, dy: -4mm)[
@@ -92,9 +107,7 @@
     ]
   ]
 }
-
-// Karte mit Schnittmarken und Falzlinie
-#let make-card(artist, title, year, url, top100, danceability) = {
+#let make-card(artist, title, year, url, top100, danceability, bg-color) = {
   let w = card-size + bleed
   let h = card-size + bleed * 2
 
@@ -103,7 +116,7 @@
       #grid(
         columns: (w, w),
         front-side(url),
-        back-side(artist, title, year, top100, danceability)
+        back-side(artist, title, year, top100, danceability, bg-color)
       )
     ]
 
@@ -147,7 +160,7 @@
 #grid(
   columns: (1fr),
   row-gutter: 4mm,
-  ..data-rows.map(row => {
+  ..data-rows.enumerate().map(((idx, row)) => {
     let artist = get(row, "artist", fallback: "Unbekannt")
     let title = get(row, "title", fallback: "Unbekannt")
     let year = get(row, "release_year", fallback: "—")
@@ -155,6 +168,9 @@
     let top100 = get(row, "Top 100 Konsolidiert", fallback: "")
     let danceability = get(row, "Danceability", fallback: "")
 
-    make-card(artist, title, year, url, top100, danceability)
+    // Rotiert zyklisch durch die Farbpalette
+    let bg-color = back-colors.at(calc.rem(idx, back-colors.len()))
+
+    make-card(artist, title, year, url, top100, danceability, bg-color)
   })
 )
