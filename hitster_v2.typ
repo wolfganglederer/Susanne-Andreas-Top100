@@ -1,5 +1,4 @@
 #import "@preview/cades:0.3.1": qr-code
-#import "@preview/cetz:0.3.1"
 
 // Seiteneinrichtung (A4)
 #set page(
@@ -7,11 +6,16 @@
   margin: (x: 10mm, y: 12mm),
 )
 
-// --- KONFIGURATION ---
+// --- KONFIGURATION MASSE ---
 #let card-size = 65mm
-#let bleed = 2mm // Toleranzbereich für Schnitt und Falz
-#let card-color-back = rgb("e33b3b")  // Hitster-Rot
-#let card-color-front = rgb("1a1a1a") // Dunkelgrau/Schwarz
+#let bleed = 2mm       // Farbiger Überstand an ALLEN 4 Seiten
+#let gap = 12mm         // Abstand zwischen Vorder- und Rückseite
+#let mark-len = 4mm    // Länge der Schnittmarken
+#let mark-off = 3mm    // 3mm Offset > 2mm Bleed -> ragt nicht in die Farbe!
+
+// --- FARBEN ---
+#let card-color-back = rgb("e33b3b")
+#let card-color-front = rgb("1a1a1a")
 
 // Hitster-Farbpalette für die Neon-Ringe
 #let c-cyan    = rgb("#0182b5")
@@ -20,49 +24,6 @@
 #let c-yellow  = rgb("fadd00")
 #let c-purple  = rgb("#562d4e")
 
-// Vorderseite: QR-Code mit versetzten, unterbrochenen Kreisbögen
-// Vorderseite (QR-Code mit gestrichelten / unterbrochenen Neon-Ringen)
-// Hilfsfunktion: Zeichnet einen Kreis mit genau einer Lücke
-#let broken-ring(r, gap-deg, stroke-color, rot) = {
-  // Umfang berechnen: 2 * pi * r
-  let circum = 2 * calc.pi * r
-  let gap-len = (gap-deg / 360deg) * circum
-  let dash-len = circum - gap-len
-
-  place(center + horizon, rotate(rot, circle(
-    radius: r,
-    stroke: (
-      paint: stroke-color,
-      thickness: 1.6pt,
-      dash: (dash-len, gap-len)
-    )
-  )))
-}
-
-// Vorderseite (QR-Code mit Neon-Ringen, jeweils genau 1 Lücke)
-// Vorderseite (QR-Code mit 8 Neon-Ringen, jeweils genau 1 Lücke)
-#let front-side(url) = {
-  box(width: card-size + bleed, height: card-size + bleed * 2, fill: card-color-front, clip: true)[
-    #align(center + horizon)[
-      
-      // 8 Ringe von außen nach innen, jeweils um ~2 mm versetzt:
-      #broken-ring(29.0mm, 50deg, c-red,    75deg)
-      #broken-ring(27.0mm, 50deg, c-cyan,   265deg)
-      #broken-ring(25.0mm, 42deg, c-yellow,   20deg)
-      #broken-ring(23.0mm, 55deg, c-red,  200deg)
-      #broken-ring(21.0mm, 30deg, c-purple,    15deg)
-      #broken-ring(19.0mm, 40deg, c-orange,      200deg)
-      #broken-ring(17.0mm, 55deg, c-cyan,  120deg)
-      #broken-ring(15.0mm, 90deg, c-yellow,  0deg)
-
-      // QR-Code auf weißem Träger
-      #rect(fill: white, inset: 2mm, radius: 1mm)[
-        #qr-code(url, width: 22mm)
-      ]
-    ]
-  ]
-}
-// Farbpalette für die Rückseiten (sattes Rot wie beim Original plus kontraststarke helle/mittlere Töne)
 #let back-colors = (
   rgb("e33b3b"), // 1. Hitster-Klassik-Rot
   rgb("ff7a33"), // 2. Kräftiges Orange
@@ -74,68 +35,108 @@
   rgb("64b5f6"), // 8. Himmelblau
 )
 
-// Rückseite mit dynamischer Hintergrundfarbe
-#let back-side(artist, title, year, top100, danceability, bg-color) = {
-  box(width: card-size + bleed, height: card-size + bleed * 2, fill: bg-color, clip: true)[
-    #set text(font: "Liberation Sans", fill: black)
+// --- VORDERSEITE ---
+#let broken-ring(r, gap-deg, stroke-color, rot) = {
+  let circum = 2 * calc.pi * r
+  let gap-len = (gap-deg / 360deg) * circum
+  let dash-len = circum - gap-len
 
+  place(center + horizon, rotate(rot, circle(
+    radius: r,
+    stroke: (paint: stroke-color, thickness: 1.6pt, dash: (dash-len, gap-len))
+  )))
+}
+
+#let front-side(url) = {
+  box(width: card-size + bleed * 2, height: card-size + bleed * 2, fill: card-color-front, clip: true)[
     #align(center + horizon)[
-      #v(8mm)
-      // Artist oben
-      #text(size: 14pt, weight: "bold")[#artist]
+      #broken-ring(29.0mm, 50deg, c-red,      75deg)
+      #broken-ring(27.0mm, 50deg, c-cyan,    265deg)
+      #broken-ring(25.0mm, 42deg, c-yellow,   20deg)
+      #broken-ring(23.0mm, 55deg, c-red,     200deg)
+      #broken-ring(21.0mm, 30deg, c-purple,   15deg)
+      #broken-ring(19.0mm, 40deg, c-orange,  200deg)
+      #broken-ring(17.0mm, 55deg, c-cyan,    120deg)
+      #broken-ring(15.0mm, 90deg, c-yellow,    0deg)
 
-      #v(1fr)
-
-      // Release Year (groß in der Mitte)
-      #text(size: 65pt, weight: "bold", tracking: -1pt)[#year]
-
-      #v(1fr)
-
-      // Songtitel unten kursiv
-      #text(size: 14pt, style: "italic")[#title]
-      #v(8mm)
-    ]
-
-    // Details in den Ecken
-    #place(bottom + left, dx: 4mm, dy: -4mm)[
-      #text(size: 6pt, weight: "bold", fill: rgb("#ffffff"))[#top100]
-    ]
-    #if danceability != "NA" and danceability != "" [
-      #place(bottom + right, dx: -4mm, dy: -4mm)[
-        #text(size: 6pt, fill: rgb("333333"))[#danceability]
+      #rect(fill: white, inset: 2mm, radius: 1mm)[
+        #qr-code(url, width: 22mm)
       ]
     ]
   ]
 }
-#let make-card(artist, title, year, url, top100, danceability, bg-color) = {
-  let w = card-size + bleed
-  let h = card-size + bleed * 2
 
-  box(width: w * 2 + 10mm, height: h + 10mm)[
+// --- RÜCKSEITE ---
+#let back-side(artist, title, year, top100, danceability, bg-color) = {
+  box(width: card-size + bleed * 2, height: card-size + bleed * 2, fill: bg-color, clip: true)[
+    #set text(font: "Liberation Sans", fill: black)
+
     #align(center + horizon)[
-      #grid(
-        columns: (w, w),
-        front-side(url),
-        back-side(artist, title, year, top100, danceability, bg-color)
-      )
+      #box(width: card-size, height: card-size)[
+        #align(center + horizon)[
+          #v(8mm)
+          #text(size: 14pt, weight: "bold")[#artist]
+          #v(1fr)
+          #text(size: 65pt, weight: "bold", tracking: -1pt)[#year]
+          #v(1fr)
+          #text(size: 14pt, style: "italic")[#title]
+          #v(8mm)
+        ]
+
+        #place(bottom + left, dx: 4mm, dy: -4mm)[
+          #text(size: 6pt, weight: "bold", fill: rgb("#ffffff"))[#top100]
+        ]
+        #if danceability != "NA" and danceability != "" [
+          #place(bottom + right, dx: -4mm, dy: -4mm)[
+            #text(size: 6pt, fill: rgb("333333"))[#danceability]
+          ]
+        ]
+      ]
+    ]
+  ]
+}
+
+// --- SCHNITTMARKEN HELFER ---
+#let crop-marks(x, y, w, h) = {
+  // Oben Links
+  place(top + left, dx: x - mark-off - mark-len, dy: y, line(length: mark-len, stroke: 0.35pt))
+  place(top + left, dx: x, dy: y - mark-off - mark-len, line(length: mark-len, angle: 90deg, stroke: 0.35pt))
+  // Oben Rechts
+  place(top + left, dx: x + w + mark-off, dy: y, line(length: mark-len, stroke: 0.35pt))
+  place(top + left, dx: x + w, dy: y - mark-off - mark-len, line(length: mark-len, angle: 90deg, stroke: 0.35pt))
+  // Unten Links
+  place(top + left, dx: x - mark-off - mark-len, dy: y + h, line(length: mark-len, stroke: 0.35pt))
+  place(top + left, dx: x, dy: y + h + mark-off, line(length: mark-len, angle: 90deg, stroke: 0.35pt))
+  // Unten Rechts
+  place(top + left, dx: x + w + mark-off, dy: y + h, line(length: mark-len, stroke: 0.35pt))
+  place(top + left, dx: x + w, dy: y + h + mark-off, line(length: mark-len, angle: 90deg, stroke: 0.35pt))
+}
+
+// --- KARTE ZUSAMMENBAUEN ---
+#let make-card(artist, title, year, url, top100, danceability, bg-color) = {
+  let front-x = mark-len + mark-off + bleed
+  let front-y = mark-len + mark-off + bleed
+  let back-x  = front-x + card-size + gap
+  let back-y  = front-y
+
+  let box-w = back-x + card-size + bleed + mark-off + mark-len
+  let box-h = front-y + card-size + bleed + mark-off + mark-len
+
+  box(width: box-w, height: box-h)[
+    #place(top + left, dx: front-x - bleed, dy: front-y - bleed)[
+      #front-side(url)
+    ]
+    #place(top + left, dx: back-x - bleed, dy: back-y - bleed)[
+      #back-side(artist, title, year, top100, danceability, bg-color)
     ]
 
-    // Äußere Schnittmarken
-    #place(top + left, dx: 5mm, dy: 0mm, line(length: 4mm, stroke: 0.4pt))
-    #place(top + left, dx: 0mm, dy: 5mm, line(length: 4mm, angle: 90deg, stroke: 0.4pt))
+    #crop-marks(front-x, front-y, card-size, card-size)
+    #crop-marks(back-x, back-y, card-size, card-size)
 
-    #place(top + right, dx: -5mm, dy: 0mm, line(length: 4mm, stroke: 0.4pt))
-    #place(top + right, dx: 0mm, dy: 5mm, line(length: 4mm, angle: 90deg, stroke: 0.4pt))
-
-    #place(bottom + left, dx: 5mm, dy: 0mm, line(length: 4mm, stroke: 0.4pt))
-    #place(bottom + left, dx: 0mm, dy: -5mm, line(length: 4mm, angle: 90deg, stroke: 0.4pt))
-
-    #place(bottom + right, dx: -5mm, dy: 0mm, line(length: 4mm, stroke: 0.4pt))
-    #place(bottom + right, dx: 0mm, dy: -5mm, line(length: 4mm, angle: 90deg, stroke: 0.4pt))
-
-    // Gestrichelte Faltlinie in der Mitte
-    #place(top + center, dy: 0mm)[
-      #line(length: h + 10mm, angle: 90deg, stroke: (paint: luma(120), thickness: 0.5pt, dash: "dashed"))
+    // Durchgängige Faltlinie im Spalt (von ganz oben bis ganz unten)
+    #let fold-x = front-x + card-size + gap / 2
+    #place(top + left, dx: fold-x, dy: 0mm)[
+      #line(length: box-h, angle: 90deg, stroke: (paint: luma(120), thickness: 0.5pt))
     ]
   ]
 }
@@ -143,7 +144,6 @@
 // --- CSV EINLESEN ---
 #let raw-data = csv("S&A Top100_manual_sort_short.csv")
 #let headers = raw-data.at(0).map(h => h.trim())
-// #let data-rows = raw-data.slice(1)
 #let data-rows = raw-data.slice(1, 4)
 
 #let get(row, col-name, fallback: "") = {
@@ -156,10 +156,10 @@
   }
 }
 
-// Grid-Ausgabe der Karten
+// --- KARTEN GENERIEREN ---
 #grid(
   columns: (1fr),
-  row-gutter: 4mm,
+  row-gutter: 8mm,
   ..data-rows.enumerate().map(((idx, row)) => {
     let artist = get(row, "artist", fallback: "Unbekannt")
     let title = get(row, "title", fallback: "Unbekannt")
@@ -168,9 +168,7 @@
     let top100 = get(row, "Top 100 Konsolidiert", fallback: "")
     let danceability = get(row, "Danceability", fallback: "")
 
-    // Rotiert zyklisch durch die Farbpalette
     let bg-color = back-colors.at(calc.rem(idx, back-colors.len()))
-
     make-card(artist, title, year, url, top100, danceability, bg-color)
   })
 )
