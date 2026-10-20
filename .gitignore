@@ -3,5 +3,7 @@
 .RData
 .Ruserdata
 .Renviron
-
 /renv
+.httr-oauth
+
+*.pdf

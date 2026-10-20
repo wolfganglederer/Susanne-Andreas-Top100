@@ -1,0 +1,8 @@
+Ich brauche ein typst script, das ein ein csv (S&A Top100_manual_sort.csv) einliest und daraus Karten mit Vorder und Rückseite macht. Auf der Vorderseite soll "spotify_url" als QR code sein. Auf der Rückseite "release_year", "Top 100 Konsolidiert" und "Danceability", "title" und "Artist". Wobei releas year groß geschrieben sein soll, die Anderen felder kleiner
+
+Es soll wie ein Karte aus dem Spiel Hitster aussehen.
+
+Die Vorder und Rückseite sollen auf einer Seite angeordnet sein, sodass durch Falten und Kleben Vorder und Rückseite zusammen gebastelt werden können. Bitte plane Schnittmarken ein und gestallte das design der Karten so, dass es Tolleranzen beim Falten und Schneiden gibt.
+Eine Hitster Karte is 65mm im Quadrat.
+
+Ich hänge noch ein Bild einer Hitster Karte an.

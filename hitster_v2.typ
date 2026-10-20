@@ -24,7 +24,7 @@
 #let c-purple  = rgb("#562d4e")
 
 #let back-colors = (
-  gradient.linear(rgb("#e33b3b"), rgb("#a64b22"), angle: 90deg), 
+  gradient.linear(rgb("#e75252"), rgb("#eea723"), angle: 90deg), 
   rgb("#46c6e0"), 
   gradient.linear(rgb("#dab6ee"), rgb("#9ceaf0"), angle: 90deg),
   rgb("4ecdc4"), 
@@ -147,7 +147,7 @@
 // --- CSV EINLESEN ---
 #let raw-data = csv("top300_hitster.csv")
 #let headers = raw-data.at(0).map(h => h.trim())
-#let data-rows = raw-data.slice(1, 3)
+#let data-rows = raw-data.slice(1)
 
 #let get(row, col-name, fallback: "") = {
   let idx = headers.position(h => h == col-name)
@@ -170,9 +170,6 @@
     let url = get(row, "spotify_url", fallback: "https://spotify.com")
     let total_points = get(row, "total_points", fallback: "xxx")
     let bg-color = back-colors.at(calc.rem(idx, back-colors.len()))
-    // let top100 = get(row, "Top 100 Konsolidiert", fallback: "")
-    // let danceability = get(row, "Danceability", fallback: "")
-
     make-card(artist, title, year, url, total_points, bg-color)
   })
 )
